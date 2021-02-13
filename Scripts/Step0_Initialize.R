@@ -77,13 +77,13 @@ check_S_parent <- function(S_parent.p, S_child.p, N.p){
 # Define a function that takes a game grid in vector form, recursively solves it backwards the specified number of times, and then returns the first resulting grid ancestor that it
 # generates as a solution in vector form
 
-solve_S_ancestor <- function(i.p2, S_descendent.p, t.p){
+solve_S_ancestor <- function(i.p2, S_descendant.p, t.p){
   # Set seed for the sake of reproducibility
   set.seed(i.p2, sample.kind = "Rounding")
   # Define permutation of indices of ancestor grid's cells that are non-trivial and determine the living cells in S_stop
-  indices <- M[which(S_descendent.p == 1),] %>% apply(1, function(x){which(x == 1)}) %>% as.vector() %>% unique() %>% sample()
+  indices <- M[which(S_descendant.p == 1),] %>% apply(1, function(x){which(x == 1)}) %>% as.vector() %>% unique() %>% sample()
   # Define the set of candidate values for each cell in parent grid, based on whether corresponding cells in S_stop are living or dead
-  S.range <- lapply(as.list(1:length(S_descendent.p)), function(s){
+  S.range <- lapply(as.list(1:length(S_descendant.p)), function(s){
     if(s %in% indices){
       c(0, 1)
     }else{
@@ -91,7 +91,7 @@ solve_S_ancestor <- function(i.p2, S_descendent.p, t.p){
     }
   })
   # Initialize index to 1 for all cells in parent grid, so that, to start, the first element of each set in S.range is assigned to the value of its corresponding cell in parent grid
-  S.index <- rep(1, times = length(S_descendent.p))
+  S.index <- rep(1, times = length(S_descendant.p))
   # Rather than using for() loop, use repeat() loop, as number of iterations of loop is unknown at execution
   repeat{
     # If complete_ind[1] has been reassigned a value of 1 by the start of each iteration of the repeat() loop, exit the loop, as this indicates a solution has already been found by
@@ -101,7 +101,7 @@ solve_S_ancestor <- function(i.p2, S_descendent.p, t.p){
     S_parent <- mapply(function(x, y){x[[y]]}, S.range, S.index)
     # Define vector of neighborhood sums corresponding to resulting parent grid
     N <- M %*% S_parent
-    if(check_S_parent(S_parent, S_descendent.p, N) == TRUE){
+    if(check_S_parent(S_parent, S_descendant.p, N) == TRUE){
       # Record ancestor grid in log of reversal process, then either assign indicator variable a value of "Y" so that function is exited or move on to solving previous ancestor grid
       game_log[[t.p]] <<- list(name = paste("S_", t.p - 1, sep = ""), value = S_parent)
       if(t.p == 1){
